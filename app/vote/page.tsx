@@ -10,6 +10,7 @@ type State = {
   leader: string;
   updatedAt: string | null;
   isComplete: boolean;
+  currentRound: number;
 };
 
 async function safeJson(res: Response) {
@@ -62,9 +63,9 @@ export default function VotePage() {
       <div className="mx-auto max-w-4xl p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight">Vote Input</h1>
+            <h1 className="text-3xl font-extrabold tracking-tight">Control Panel</h1>
             <p className="mt-1 text-slate-600">
-              Use this on your tablet. TV should be on <span className="font-semibold">/display</span>.
+              Admin controls and manual vote input. Members scan QR for <span className="font-semibold">/scan</span>.
             </p>
           </div>
 
@@ -76,10 +77,16 @@ export default function VotePage() {
               Reset All
             </button>
             <a
+              href="/scan"
+              className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold shadow-sm active:scale-[0.99]"
+            >
+              Public Vote
+            </a>
+            <a
               href="/display"
               className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold shadow-sm active:scale-[0.99]"
             >
-              Open Display
+              Display
             </a>
           </div>
         </div>
@@ -101,6 +108,31 @@ export default function VotePage() {
           <div className="mt-6 text-slate-600">Loading…</div>
         ) : (
           <div className="mt-5 space-y-4">
+            {/* Current Round Selector */}
+            <div className="rounded-2xl border-2 border-blue-200 bg-blue-50 p-4 shadow-sm">
+              <div className="text-lg font-bold text-blue-900 mb-3">
+                Active Round for Public Voting (QR Code)
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {s.rounds.map((r, i) => (
+                  <button
+                    key={i}
+                    onClick={() => post({ action: "setRound", round: i })}
+                    className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
+                      s.currentRound === i
+                        ? "bg-blue-600 text-white shadow-md"
+                        : "bg-white border border-slate-300 text-slate-700 hover:bg-slate-50"
+                    }`}
+                  >
+                    {i + 1}. {r.name}
+                  </button>
+                ))}
+              </div>
+              <div className="mt-3 text-sm text-blue-700">
+                Current: <span className="font-bold">{s.rounds[s.currentRound].name}</span> (Round {s.currentRound + 1})
+              </div>
+            </div>
+
             {s.rounds.map((r, i) => (
               <div key={i} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                 <div className="text-xl font-extrabold">

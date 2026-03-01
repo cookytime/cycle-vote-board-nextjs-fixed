@@ -5,7 +5,7 @@ export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   const body = (await req.json().catch(() => ({}))) as any;
-  const action = body.action as "add" | "undo" | "reset" | "complete" | "uncomplete" | undefined;
+  const action = body.action as "add" | "undo" | "reset" | "complete" | "uncomplete" | "setRound" | "publicVote" | undefined;
   const round = body.round as number | undefined;
   const team = body.team as "A" | "B" | undefined;
 
@@ -25,6 +25,26 @@ export async function POST(req: Request) {
 
   if (action === "uncomplete") {
     s.isComplete = false;
+    await saveState(s);
+    return NextResponse.json({ ok: true });
+  }
+
+  // Set the current active round for public voting
+  if (action === "setRound") {
+    if (!Number.isInteger(round) || (round as number) < 0 || (round as number) >= s.rounds.length) {
+      return NextResponse.json({ ok: false, error: "Invalid round" }, { status: 400 });
+    }
+    s.currentRound = round as number;
+    await saveState(s);
+    return NextResponse.json({ ok: true });
+  }
+
+  // Public vote - only allows voting on current round
+  if (action === "publicVote") {
+    if (team !== "A" && team !== "B") {
+      return NextResponse.json({ ok: false, error: "Invalid team" }, { status: 400 });
+    }
+    s.rounds[s.currentRound][team] += 1;
     await saveState(s);
     return NextResponse.json({ ok: true });
   }

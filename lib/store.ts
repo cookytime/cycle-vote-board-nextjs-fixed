@@ -6,6 +6,7 @@ export type VoteState = {
   rounds: Round[];
   updatedAt: string | null;
   isComplete: boolean;
+  currentRound: number; // Index of the current active round for public voting
 };
 
 const KEY = "cycle-votes:v1";
@@ -21,6 +22,7 @@ export const DEFAULT_STATE: VoteState = {
   ],
   updatedAt: null,
   isComplete: false,
+  currentRound: 0,
 };
 
 // Module-level memory fallback (works great locally; for Vercel use Upstash env vars)

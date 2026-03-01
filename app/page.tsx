@@ -9,21 +9,29 @@ export default function HomePage() {
 
         <div className="flex flex-col gap-4">
           <Link
+            href="/scan"
+            className="rounded-2xl bg-green-600 py-5 text-2xl font-extrabold text-white shadow-lg hover:bg-green-700 active:scale-[0.99] transition"
+          >
+            Member Vote (QR Scan)
+          </Link>
+          <Link
             href="/vote"
             className="rounded-2xl bg-blue-600 py-5 text-2xl font-extrabold text-white shadow-lg hover:bg-blue-700 active:scale-[0.99] transition"
           >
-            🗳 Vote Input (Tablet)
+            Control Panel (Admin)
           </Link>
           <Link
             href="/display"
             className="rounded-2xl bg-black py-5 text-2xl font-extrabold text-white shadow-lg hover:bg-neutral-800 active:scale-[0.99] transition"
           >
-            📺 Scoreboard Display (TV)
+            Scoreboard Display (TV)
           </Link>
         </div>
 
         <div className="text-sm text-slate-500">
-          Tip: Bookmark <span className="font-semibold">/vote</span> on your tablet and <span className="font-semibold">/display</span> on the TV.
+          <p><span className="font-semibold">/scan</span> - QR code page for members to vote on current battle</p>
+          <p><span className="font-semibold">/vote</span> - Admin control panel and manual votes</p>
+          <p><span className="font-semibold">/display</span> - TV scoreboard</p>
         </div>
       </div>
     </div>

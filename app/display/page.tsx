@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 type Round = { name: string; A: number; B: number };
 type State = {
@@ -16,6 +16,83 @@ async function getState(): Promise<State> {
   const text = await res.text();
   if (!res.ok) throw new Error(text.slice(0, 200));
   return JSON.parse(text);
+}
+
+// Confetti particle component
+function Confetti() {
+  const particles = useMemo(() => 
+    Array.from({ length: 60 }, (_, i) => ({
+      id: i,
+      left: Math.random() * 100,
+      delay: Math.random() * 3,
+      duration: 2 + Math.random() * 3,
+      color: ['#3b82f6', '#ef4444', '#fbbf24', '#ffffff', '#60a5fa', '#f87171'][Math.floor(Math.random() * 6)],
+      size: 8 + Math.random() * 12,
+    })), []
+  );
+
+  return (
+    <div className="fixed inset-0 pointer-events-none overflow-hidden z-50">
+      {particles.map((p) => (
+        <div
+          key={p.id}
+          className="absolute animate-confetti"
+          style={{
+            left: `${p.left}%`,
+            top: '-20px',
+            width: p.size,
+            height: p.size,
+            backgroundColor: p.color,
+            animationDelay: `${p.delay}s`,
+            animationDuration: `${p.duration}s`,
+            borderRadius: Math.random() > 0.5 ? '50%' : '2px',
+            transform: `rotate(${Math.random() * 360}deg)`,
+          }}
+        />
+      ))}
+    </div>
+  );
+}
+
+// Winner celebration overlay
+function WinnerCelebration({ winner, flag, score, loserScore }: { winner: string; flag: string; score: number; loserScore: number }) {
+  const isTie = score === loserScore;
+  
+  return (
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/80 backdrop-blur-sm">
+      <Confetti />
+      <div className="text-center animate-winner-entrance">
+        {isTie ? (
+          <>
+            <div className="text-[10rem] leading-none mb-4 animate-bounce-slow">
+              <span>🇺🇸</span>
+              <span className="mx-4">🤝</span>
+              <span>🇬🇧</span>
+            </div>
+            <div className="text-7xl font-black text-yellow-400 mb-6 animate-pulse">
+              {"IT'S A TIE!"}
+            </div>
+            <div className="text-5xl font-bold text-white/80">
+              {score} - {loserScore}
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="text-[12rem] leading-none mb-4 animate-bounce-slow">{flag}</div>
+            <div className="text-8xl font-black text-yellow-400 mb-4 animate-pulse drop-shadow-lg">
+              {winner} WINS!
+            </div>
+            <div className="text-5xl font-bold text-white/80 mb-8">
+              {score} - {loserScore}
+            </div>
+            <div className="text-3xl text-white/60 uppercase tracking-widest">
+              All rounds complete
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  );
 }
 
 function ScoreCard({ team, score, flag, color, isLeading }: { team: string; score: number; flag: string; color: string; isLeading: boolean }) {
@@ -92,9 +169,23 @@ export default function DisplayPage() {
 
   const usaLeading = s && s.totals.A > s.totals.B;
   const ukLeading = s && s.totals.B > s.totals.A;
+  
+  // Check if all rounds have been voted on (both teams have at least 1 vote in the round)
+  const allRoundsComplete = s && s.rounds.every(r => r.A > 0 || r.B > 0);
+  const showCelebration = allRoundsComplete && s && (s.totals.A > 0 || s.totals.B > 0);
 
   return (
     <div className="min-h-screen bg-neutral-950 text-white overflow-hidden">
+      {/* Winner celebration overlay */}
+      {showCelebration && s && (
+        <WinnerCelebration 
+          winner={usaLeading ? s.teams.A : s.teams.B}
+          flag={usaLeading ? "🇺🇸" : "🇬🇧"}
+          score={Math.max(s.totals.A, s.totals.B)}
+          loserScore={Math.min(s.totals.A, s.totals.B)}
+        />
+      )}
+      
       {/* Animated background gradient */}
       <div className="fixed inset-0 bg-gradient-to-br from-blue-950/30 via-neutral-950 to-red-950/30 pointer-events-none" />
       

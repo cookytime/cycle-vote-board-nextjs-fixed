@@ -5,7 +5,7 @@ export const runtime = "nodejs";
 
 export async function POST(req: Request) {
   const body = (await req.json().catch(() => ({}))) as any;
-  const action = body.action as "add" | "undo" | "reset" | undefined;
+  const action = body.action as "add" | "undo" | "reset" | "complete" | "uncomplete" | undefined;
   const round = body.round as number | undefined;
   const team = body.team as "A" | "B" | undefined;
 
@@ -16,6 +16,18 @@ export async function POST(req: Request) {
   }
 
   const s = await loadState();
+
+  if (action === "complete") {
+    s.isComplete = true;
+    await saveState(s);
+    return NextResponse.json({ ok: true });
+  }
+
+  if (action === "uncomplete") {
+    s.isComplete = false;
+    await saveState(s);
+    return NextResponse.json({ ok: true });
+  }
 
   if (!Number.isInteger(round) || (round as number) < 0 || (round as number) >= s.rounds.length) {
     return NextResponse.json({ ok: false, error: "Invalid round" }, { status: 400 });

@@ -9,6 +9,7 @@ type State = {
   totals: { A: number; B: number };
   leader: string;
   updatedAt: string | null;
+  isComplete: boolean;
 };
 
 async function getState(): Promise<State> {
@@ -170,9 +171,8 @@ export default function DisplayPage() {
   const usaLeading = s && s.totals.A > s.totals.B;
   const ukLeading = s && s.totals.B > s.totals.A;
   
-  // Check if all rounds have been voted on (both teams have at least 1 vote in the round)
-  const allRoundsComplete = s && s.rounds.every(r => r.A > 0 || r.B > 0);
-  const showCelebration = allRoundsComplete && s && (s.totals.A > 0 || s.totals.B > 0);
+  // Show celebration when instructor marks voting as complete
+  const showCelebration = s?.isComplete;
 
   return (
     <div className="min-h-screen bg-neutral-950 text-white overflow-hidden">

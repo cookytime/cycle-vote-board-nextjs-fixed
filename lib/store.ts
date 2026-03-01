@@ -5,6 +5,7 @@ export type VoteState = {
   teams: { A: string; B: string };
   rounds: Round[];
   updatedAt: string | null;
+  isComplete: boolean;
 };
 
 const KEY = "cycle-votes:v1";
@@ -19,6 +20,7 @@ export const DEFAULT_STATE: VoteState = {
     { name: "00s", A: 0, B: 0 },
   ],
   updatedAt: null,
+  isComplete: false,
 };
 
 // Module-level memory fallback (works great locally; for Vercel use Upstash env vars)

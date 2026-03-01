@@ -9,6 +9,7 @@ type State = {
   totals: { A: number; B: number };
   leader: string;
   updatedAt: string | null;
+  isComplete: boolean;
 };
 
 async function safeJson(res: Response) {
@@ -151,6 +152,30 @@ export default function VotePage() {
                 Last update: {s.updatedAt ?? "—"} • Leader:{" "}
                 <span className="font-extrabold">{s.leader}</span>
               </div>
+            </div>
+
+            {/* Complete / Show Winner Button */}
+            <div className="rounded-2xl border-2 border-dashed border-slate-300 bg-gradient-to-br from-yellow-50 to-orange-50 p-6 shadow-sm">
+              {!s.isComplete ? (
+                <button
+                  onClick={() => post({ action: "complete" })}
+                  className="w-full rounded-2xl bg-gradient-to-r from-yellow-400 to-orange-500 px-6 py-6 text-3xl font-black text-white shadow-lg active:scale-[0.98] transition-transform"
+                >
+                  Show Winner
+                </button>
+              ) : (
+                <div className="space-y-3">
+                  <div className="text-center text-xl font-bold text-green-700">
+                    Winner is being displayed on screen!
+                  </div>
+                  <button
+                    onClick={() => post({ action: "uncomplete" })}
+                    className="w-full rounded-xl border border-slate-300 bg-white px-4 py-3 text-lg font-semibold shadow-sm active:scale-[0.99]"
+                  >
+                    Hide Winner / Continue Voting
+                  </button>
+                </div>
+              )}
             </div>
           </div>
         )}

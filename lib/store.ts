@@ -1,11 +1,18 @@
 import { Redis } from "@upstash/redis";
 
-export type Round = { name: string; A: number; B: number };
+export type Round = { 
+  name: string; 
+  A: number; 
+  B: number;
+  trackA: string;
+  trackB: string;
+};
 export type VoteState = {
   teams: { A: string; B: string };
   rounds: Round[];
   updatedAt: string | null;
   isComplete: boolean;
+  currentRound: number; // Index of the current active round for public voting
 };
 
 const KEY = "cycle-votes:v1";
@@ -13,14 +20,15 @@ const KEY = "cycle-votes:v1";
 export const DEFAULT_STATE: VoteState = {
   teams: { A: "USA", B: "UK" },
   rounds: [
-    { name: "70s Rock", A: 0, B: 0 },
-    { name: "80s Pop", A: 0, B: 0 },
-    { name: "80s Rock", A: 0, B: 0 },
-    { name: "90s", A: 0, B: 0 },
-    { name: "00s", A: 0, B: 0 },
+    { name: "70s Rock", A: 0, B: 0, trackA: "Go Your Own Way – Fleetwood Mac", trackB: "Start Me Up – Rolling Stones" },
+    { name: "80s Pop", A: 0, B: 0, trackA: "Holiday – Madonna", trackB: "Wake Me Up Before You Go-Go – Wham!" },
+    { name: "80s Rock", A: 0, B: 0, trackA: "Livin' on a Prayer – Bon Jovi", trackB: "Pour Some Sugar on Me – Def Leppard" },
+    { name: "90s", A: 0, B: 0, trackA: "All I Wanna Do – Sheryl Crow", trackB: "Wonderwall – Oasis" },
+    { name: "00s", A: 0, B: 0, trackA: "Mr. Brightside – The Killers", trackB: "Viva La Vida – Coldplay" },
   ],
   updatedAt: null,
   isComplete: false,
+  currentRound: 0,
 };
 
 // Module-level memory fallback (works great locally; for Vercel use Upstash env vars)

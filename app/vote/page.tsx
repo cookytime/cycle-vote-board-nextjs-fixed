@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-type Round = { name: string; A: number; B: number };
+type Round = { name: string; A: number; B: number; trackA: string; trackB: string };
 type State = {
   teams: { A: string; B: string };
   rounds: Round[];
@@ -10,6 +10,7 @@ type State = {
   leader: string;
   updatedAt: string | null;
   isComplete: boolean;
+  currentRound: number;
 };
 
 async function safeJson(res: Response) {
@@ -62,9 +63,9 @@ export default function VotePage() {
       <div className="mx-auto max-w-4xl p-6">
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-3xl font-extrabold tracking-tight">Vote Input</h1>
+            <h1 className="text-3xl font-extrabold tracking-tight">Control Panel</h1>
             <p className="mt-1 text-slate-600">
-              Use this on your tablet. TV should be on <span className="font-semibold">/display</span>.
+              Admin controls and manual vote input. Members scan QR for <span className="font-semibold">/scan</span>.
             </p>
           </div>
 
@@ -76,10 +77,16 @@ export default function VotePage() {
               Reset All
             </button>
             <a
+              href="/scan"
+              className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold shadow-sm active:scale-[0.99]"
+            >
+              Public Vote
+            </a>
+            <a
               href="/display"
               className="rounded-xl border border-slate-300 bg-white px-4 py-2 text-sm font-semibold shadow-sm active:scale-[0.99]"
             >
-              Open Display
+              Display
             </a>
           </div>
         </div>
@@ -101,10 +108,74 @@ export default function VotePage() {
           <div className="mt-6 text-slate-600">Loading…</div>
         ) : (
           <div className="mt-5 space-y-4">
+            {/* Current Round Selector */}
+            <div className="rounded-2xl border-2 border-blue-200 bg-blue-50 p-4 shadow-sm">
+              <div className="text-lg font-bold text-blue-900 mb-3">
+                Active Round for Public Voting (QR Code)
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {s.rounds.map((r, i) => (
+                  <button
+                    key={i}
+                    onClick={() => post({ action: "setRound", round: i })}
+                    className={`rounded-xl px-4 py-2 text-sm font-semibold transition-all ${
+                      s.currentRound === i
+                        ? "bg-blue-600 text-white shadow-md"
+                        : "bg-white border border-slate-300 text-slate-700 hover:bg-slate-50"
+                    }`}
+                  >
+                    {i + 1}. {r.name}
+                  </button>
+                ))}
+              </div>
+              <div className="mt-3 text-sm text-blue-700">
+                Current: <span className="font-bold">{s.rounds[s.currentRound].name}</span> (Round {s.currentRound + 1})
+              </div>
+              <div className="mt-2 grid grid-cols-2 gap-3 text-sm">
+                <div className="bg-white/70 rounded-lg px-3 py-2">
+                  <span className="text-blue-600 font-semibold">{s.teams.A}:</span>{" "}
+                  <span className="text-slate-700">{s.rounds[s.currentRound].trackA}</span>
+                </div>
+                <div className="bg-white/70 rounded-lg px-3 py-2">
+                  <span className="text-red-600 font-semibold">{s.teams.B}:</span>{" "}
+                  <span className="text-slate-700">{s.rounds[s.currentRound].trackB}</span>
+                </div>
+              </div>
+            </div>
+
             {s.rounds.map((r, i) => (
-              <div key={i} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                <div className="text-xl font-extrabold">
-                  Round {i + 1}: <span className="font-black">{r.name}</span>
+              <div key={i} className={`rounded-2xl border bg-white p-4 shadow-sm ${s.currentRound === i ? "border-blue-400 ring-2 ring-blue-200" : "border-slate-200"}`}>
+                <div className="flex items-center justify-between">
+                  <div className="text-xl font-extrabold">
+                    Round {i + 1}: <span className="font-black">{r.name}</span>
+                  </div>
+                  {s.currentRound === i && (
+                    <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded-full">ACTIVE</span>
+                  )}
+                </div>
+
+                {/* Track inputs */}
+                <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm font-medium text-blue-700 w-12">{s.teams.A}:</label>
+                    <input
+                      type="text"
+                      defaultValue={r.trackA}
+                      onBlur={(e) => post({ action: "setTrack", round: i, team: "A", track: e.target.value })}
+                      className="flex-1 rounded-lg border border-slate-300 px-3 py-1.5 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                      placeholder="Track name..."
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm font-medium text-red-700 w-12">{s.teams.B}:</label>
+                    <input
+                      type="text"
+                      defaultValue={r.trackB}
+                      onBlur={(e) => post({ action: "setTrack", round: i, team: "B", track: e.target.value })}
+                      className="flex-1 rounded-lg border border-slate-300 px-3 py-1.5 text-sm focus:border-red-400 focus:outline-none focus:ring-1 focus:ring-red-400"
+                      placeholder="Track name..."
+                    />
+                  </div>
                 </div>
 
                 <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">

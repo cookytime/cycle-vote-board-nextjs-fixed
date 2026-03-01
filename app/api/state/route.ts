@@ -7,5 +7,11 @@ export async function GET() {
   const s = await loadState();
   const t = totals(s);
   const leader = t.A > t.B ? s.teams.A : t.B > t.A ? s.teams.B : "TIE";
-  return NextResponse.json({ ...s, totals: t, leader, isComplete: s.isComplete ?? false });
+  return NextResponse.json({ 
+    ...s, 
+    totals: t, 
+    leader, 
+    isComplete: s.isComplete ?? false,
+    currentRound: s.currentRound ?? 0,
+  });
 }

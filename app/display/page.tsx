@@ -138,11 +138,7 @@ export default function DisplayPage() {
   const [s, setS] = useState<State | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [pulse, setPulse] = useState(false);
-  const [scanUrl, setScanUrl] = useState("");
-
-  useEffect(() => {
-    setScanUrl(`${window.location.origin}/scan`);
-  }, []);
+  const scanUrl = "https://vote.glencook.fit/scan";
 
   useEffect(() => {
     let cancelled = false;
@@ -202,14 +198,12 @@ export default function DisplayPage() {
             CYCLE BATTLE
           </h1>
           <div className="flex items-center gap-6">
-            {scanUrl && (
-              <QRCodeDisplay 
-                url={scanUrl} 
-                size={80} 
-                label="Scan to Vote"
-                className="text-white/70"
-              />
-            )}
+            <QRCodeDisplay 
+              url={scanUrl} 
+              size={80} 
+              label="Scan to Vote"
+              className="text-white/70"
+            />
             <div className="text-xl text-white/50 font-medium">
               {s?.updatedAt ? `Updated ${s.updatedAt}` : "Loading..."}
             </div>

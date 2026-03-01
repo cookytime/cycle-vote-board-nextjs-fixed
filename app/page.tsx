@@ -1,15 +1,9 @@
-"use client";
-
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { QRCodeDisplay } from "@/components/qr-code";
 
-export default function HomePage() {
-  const [scanUrl, setScanUrl] = useState("");
+const SCAN_URL = "https://vote.glencook.fit/scan";
 
-  useEffect(() => {
-    setScanUrl(`${window.location.origin}/scan`);
-  }, []);
+export default function HomePage() {
 
   return (
     <div className="min-h-screen bg-slate-100 flex items-center justify-center p-6">
@@ -18,16 +12,14 @@ export default function HomePage() {
         <p className="text-slate-600">Pick where you want to go.</p>
 
         {/* QR Code for scanning */}
-        {scanUrl && (
-          <div className="py-4">
-            <QRCodeDisplay 
-              url={scanUrl} 
-              size={180} 
-              label="Scan to Vote"
-              className="text-slate-600"
-            />
-          </div>
-        )}
+        <div className="py-4">
+          <QRCodeDisplay 
+            url={SCAN_URL} 
+            size={180} 
+            label="Scan to Vote"
+            className="text-slate-600"
+          />
+        </div>
 
         <div className="flex flex-col gap-4">
           <Link

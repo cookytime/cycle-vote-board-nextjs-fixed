@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState, useMemo } from "react";
+import { QRCodeDisplay } from "@/components/qr-code";
 
 type Round = { name: string; A: number; B: number };
 type State = {
@@ -137,6 +138,11 @@ export default function DisplayPage() {
   const [s, setS] = useState<State | null>(null);
   const [err, setErr] = useState<string | null>(null);
   const [pulse, setPulse] = useState(false);
+  const [scanUrl, setScanUrl] = useState("");
+
+  useEffect(() => {
+    setScanUrl(`${window.location.origin}/scan`);
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -195,8 +201,18 @@ export default function DisplayPage() {
           <h1 className="text-5xl font-black tracking-tight bg-gradient-to-r from-blue-400 via-white to-red-400 bg-clip-text text-transparent">
             CYCLE BATTLE
           </h1>
-          <div className="text-xl text-white/50 font-medium">
-            {s?.updatedAt ? `Updated ${s.updatedAt}` : "Loading..."}
+          <div className="flex items-center gap-6">
+            {scanUrl && (
+              <QRCodeDisplay 
+                url={scanUrl} 
+                size={80} 
+                label="Scan to Vote"
+                className="text-white/70"
+              />
+            )}
+            <div className="text-xl text-white/50 font-medium">
+              {s?.updatedAt ? `Updated ${s.updatedAt}` : "Loading..."}
+            </div>
           </div>
         </div>
 

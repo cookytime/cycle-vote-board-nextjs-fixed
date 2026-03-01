@@ -1,11 +1,33 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { QRCodeDisplay } from "@/components/qr-code";
 
 export default function HomePage() {
+  const [scanUrl, setScanUrl] = useState("");
+
+  useEffect(() => {
+    setScanUrl(`${window.location.origin}/scan`);
+  }, []);
+
   return (
     <div className="min-h-screen bg-slate-100 flex items-center justify-center p-6">
       <div className="w-full max-w-md rounded-3xl border border-slate-200 bg-white p-8 shadow-xl text-center space-y-6">
-        <h1 className="text-4xl font-black tracking-tight">🇺🇸🇬🇧 Vote Board</h1>
+        <h1 className="text-4xl font-black tracking-tight">US vs UK Vote Board</h1>
         <p className="text-slate-600">Pick where you want to go.</p>
+
+        {/* QR Code for scanning */}
+        {scanUrl && (
+          <div className="py-4">
+            <QRCodeDisplay 
+              url={scanUrl} 
+              size={180} 
+              label="Scan to Vote"
+              className="text-slate-600"
+            />
+          </div>
+        )}
 
         <div className="flex flex-col gap-4">
           <Link

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-type Round = { name: string; A: number; B: number };
+type Round = { name: string; A: number; B: number; trackA: string; trackB: string };
 type State = {
   teams: { A: string; B: string };
   rounds: Round[];
@@ -131,12 +131,51 @@ export default function VotePage() {
               <div className="mt-3 text-sm text-blue-700">
                 Current: <span className="font-bold">{s.rounds[s.currentRound].name}</span> (Round {s.currentRound + 1})
               </div>
+              <div className="mt-2 grid grid-cols-2 gap-3 text-sm">
+                <div className="bg-white/70 rounded-lg px-3 py-2">
+                  <span className="text-blue-600 font-semibold">{s.teams.A}:</span>{" "}
+                  <span className="text-slate-700">{s.rounds[s.currentRound].trackA}</span>
+                </div>
+                <div className="bg-white/70 rounded-lg px-3 py-2">
+                  <span className="text-red-600 font-semibold">{s.teams.B}:</span>{" "}
+                  <span className="text-slate-700">{s.rounds[s.currentRound].trackB}</span>
+                </div>
+              </div>
             </div>
 
             {s.rounds.map((r, i) => (
-              <div key={i} className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-                <div className="text-xl font-extrabold">
-                  Round {i + 1}: <span className="font-black">{r.name}</span>
+              <div key={i} className={`rounded-2xl border bg-white p-4 shadow-sm ${s.currentRound === i ? "border-blue-400 ring-2 ring-blue-200" : "border-slate-200"}`}>
+                <div className="flex items-center justify-between">
+                  <div className="text-xl font-extrabold">
+                    Round {i + 1}: <span className="font-black">{r.name}</span>
+                  </div>
+                  {s.currentRound === i && (
+                    <span className="text-xs font-bold text-blue-600 bg-blue-100 px-2 py-1 rounded-full">ACTIVE</span>
+                  )}
+                </div>
+
+                {/* Track inputs */}
+                <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm font-medium text-blue-700 w-12">{s.teams.A}:</label>
+                    <input
+                      type="text"
+                      defaultValue={r.trackA}
+                      onBlur={(e) => post({ action: "setTrack", round: i, team: "A", track: e.target.value })}
+                      className="flex-1 rounded-lg border border-slate-300 px-3 py-1.5 text-sm focus:border-blue-400 focus:outline-none focus:ring-1 focus:ring-blue-400"
+                      placeholder="Track name..."
+                    />
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <label className="text-sm font-medium text-red-700 w-12">{s.teams.B}:</label>
+                    <input
+                      type="text"
+                      defaultValue={r.trackB}
+                      onBlur={(e) => post({ action: "setTrack", round: i, team: "B", track: e.target.value })}
+                      className="flex-1 rounded-lg border border-slate-300 px-3 py-1.5 text-sm focus:border-red-400 focus:outline-none focus:ring-1 focus:ring-red-400"
+                      placeholder="Track name..."
+                    />
+                  </div>
                 </div>
 
                 <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2">

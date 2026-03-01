@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-type Round = { name: string; A: number; B: number };
+type Round = { name: string; A: number; B: number; trackA: string; trackB: string };
 type State = {
   teams: { A: string; B: string };
   rounds: Round[];
@@ -65,12 +65,10 @@ export default function ScanVotePage() {
 
   useEffect(() => {
     refresh();
-    // Poll for state changes (in case admin changes current round)
     const interval = setInterval(refresh, 5000);
     return () => clearInterval(interval);
   }, []);
 
-  // Reset voted state when current round changes
   useEffect(() => {
     if (s) {
       setVoted(null);
@@ -108,7 +106,6 @@ export default function ScanVotePage() {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-900 to-slate-800 flex items-center justify-center p-6">
         <div className="w-full max-w-lg text-center">
-          <div className="text-6xl mb-4">🏆</div>
           <h1 className="text-4xl font-black text-white">Voting Complete!</h1>
           <p className="mt-4 text-xl text-slate-400">
             Winner: <span className="text-yellow-400 font-bold">{s.leader}</span>
@@ -145,7 +142,11 @@ export default function ScanVotePage() {
           {voted ? (
             /* Thank you state */
             <div className="text-center py-12">
-              <div className="text-6xl mb-4">✓</div>
+              <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-500/20 flex items-center justify-center">
+                <svg className="w-8 h-8 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                </svg>
+              </div>
               <h3 className="text-3xl font-bold text-green-400">Vote Recorded!</h3>
               <p className="mt-4 text-xl text-slate-400">
                 You voted for{" "}
@@ -158,24 +159,32 @@ export default function ScanVotePage() {
               </p>
             </div>
           ) : (
-            /* Voting buttons */
+            /* Voting buttons with track info */
             <div className="grid grid-cols-2 gap-4">
               <button
                 onClick={() => vote("A")}
                 disabled={isVoting}
-                className="aspect-square rounded-3xl bg-gradient-to-br from-blue-600 to-blue-700 p-6 flex flex-col items-center justify-center text-white shadow-xl shadow-blue-900/30 active:scale-[0.97] transition-transform disabled:opacity-50"
+                className="rounded-3xl bg-gradient-to-br from-blue-600 to-blue-700 p-5 flex flex-col items-center justify-center text-white shadow-xl shadow-blue-900/30 active:scale-[0.97] transition-transform disabled:opacity-50 min-h-[200px]"
               >
-                <span className="text-5xl font-black">{s.teams.A}</span>
-                <span className="mt-2 text-blue-200/70 text-sm font-medium">Tap to vote</span>
+                <span className="text-3xl font-black">{s.teams.A}</span>
+                <div className="mt-3 px-3 py-2 bg-white/10 rounded-xl w-full text-center">
+                  <span className="text-xs text-blue-100/70 uppercase tracking-wide block">Playing</span>
+                  <span className="text-sm font-semibold text-white leading-tight block mt-1">{currentBattle.trackA}</span>
+                </div>
+                <span className="mt-3 text-blue-200/70 text-sm font-medium">Tap to vote</span>
               </button>
 
               <button
                 onClick={() => vote("B")}
                 disabled={isVoting}
-                className="aspect-square rounded-3xl bg-gradient-to-br from-red-600 to-red-700 p-6 flex flex-col items-center justify-center text-white shadow-xl shadow-red-900/30 active:scale-[0.97] transition-transform disabled:opacity-50"
+                className="rounded-3xl bg-gradient-to-br from-red-600 to-red-700 p-5 flex flex-col items-center justify-center text-white shadow-xl shadow-red-900/30 active:scale-[0.97] transition-transform disabled:opacity-50 min-h-[200px]"
               >
-                <span className="text-5xl font-black">{s.teams.B}</span>
-                <span className="mt-2 text-red-200/70 text-sm font-medium">Tap to vote</span>
+                <span className="text-3xl font-black">{s.teams.B}</span>
+                <div className="mt-3 px-3 py-2 bg-white/10 rounded-xl w-full text-center">
+                  <span className="text-xs text-red-100/70 uppercase tracking-wide block">Playing</span>
+                  <span className="text-sm font-semibold text-white leading-tight block mt-1">{currentBattle.trackB}</span>
+                </div>
+                <span className="mt-3 text-red-200/70 text-sm font-medium">Tap to vote</span>
               </button>
             </div>
           )}

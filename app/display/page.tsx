@@ -200,7 +200,7 @@ export default function DisplayPage() {
           <div className="flex items-center gap-6">
             <QRCodeDisplay 
               url={scanUrl} 
-              size={80} 
+              size={140} 
               label="Scan to Vote"
               className="text-white/70"
             />
